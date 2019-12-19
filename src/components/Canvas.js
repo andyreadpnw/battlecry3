@@ -5,13 +5,16 @@ export default class Canvas extends React.Component {
     super(props);
 
     this.state = {
-      hexSize: 20
+      hexSize: 30,
+      hexOrigin: {x: 300, y:300}
     };
   }
 
   componentWillMount() {
+    let hexParameters = this.getHexParameters()
     this.setState({
-      canvasSize: { canvasWidth: 800, canvasHeight: 600 }
+      canvasSize: { canvasWidth: 800, canvasHeight: 600 },
+      hexParameters: hexParameters
     })
   }
 
@@ -19,7 +22,28 @@ export default class Canvas extends React.Component {
     const { canvasWidth, canvasHeight } = this.state.canvasSize;
     this.canvasHex.width = canvasWidth;
     this.canvasHex.height = canvasHeight;
-    this.drawHex(this.canvasHex, { x: 50, y: 50})
+    this.drawHexes();
+  }
+
+  drawHexes() {
+    const { canvasWidth, canvasHeight } = this.state.canvasSize
+    const { hexWidth, hexHeight, vertDist, horizDist } = this.state.hexParameters;
+    const hexOrigin = this.state.hexOrigin;
+    let qLeftSide = Math.round(hexOrigin.x/hexWidth)*4;
+    let qRightSide = Math.round(canvasWidth - hexOrigin.x)/hexWidth * 2;
+    let rTopSide = Math.round(hexOrigin.y)/(hexHeight/2);
+    let rBottomSide = Math.round(canvasHeight - hexOrigin.y)/(hexHeight/2)
+    for (let r = -rTopSide; r <= rBottomSide; r++) {
+      for (let q = -qLeftSide; q <= qRightSide; q++){
+        console.log(r,q)
+        let center = this.hexToPixel(this.Hex(q, r))
+        if((center.x > hexWidth/2 && center.x < canvasWidth - hexWidth/2) && (center.y > hexHeight/2 && center.y < canvasHeight - hexHeight/2)){
+          this.drawHex(this.canvasHex, center);
+          this.drawHexCoordinates(this.canvasHex, center, this.Hex(q, r));
+        }
+
+      }
+    }
   }
 
 
@@ -39,8 +63,27 @@ export default class Canvas extends React.Component {
    return this.Point(x, y)
   }
 
+  getHexParameters() {
+    let hexHeight = this.state.hexSize * 2;
+    let hexWidth = Math.sqrt(3)/2 * hexHeight;
+    let vertDist = hexHeight * 3/4;
+    let horizDist = hexWidth;
+    return { hexWidth, hexHeight, vertDist, horizDist }
+  }
+
+ hexToPixel(h) {
+   let hexOrigin = this.state.hexOrigin;
+    let x = this.state.hexSize * Math.sqrt(3) * (h.q + h.r/2) + hexOrigin.x;
+    let y = this.state.hexSize * 3/2 * h.r + hexOrigin.y;
+    return this.Point(x, y)
+}
+
   Point(x, y) {
     return {x: x, y: y}
+  }
+
+  Hex(q, r) {
+    return {q: q, r: r}
   }
 
   drawLine(canvasID, start, end) {
@@ -52,7 +95,11 @@ export default class Canvas extends React.Component {
     ctx.closePath();
   }
 
-
+  drawHexCoordinates(canvasID, center, h) {
+    const ctx = canvasID.getContext("2d");
+    ctx.fillText(h.q, center.x - 10, center.y)
+    ctx.fillText(h.r, center.x + 5, center.y)
+  }
 
   render() {
     return (
