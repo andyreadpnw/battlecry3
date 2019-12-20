@@ -35,6 +35,7 @@ export default class Canvas extends React.Component {
       const { canvasWidth, canvasHeight } = this.state.canvasSize;
       const ctx = this.canvasCoordinates.getContext("2d");
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      this.drawNeighbors(this.Hex(q, r, s));
       this.drawHex(this.canvasCoordinates, this.Point(x, y), "lime", 2);
       return true;
     }
@@ -61,7 +62,7 @@ export default class Canvas extends React.Component {
         this.drawHexCoordinates(
           this.canvasHex,
           this.Point(x, y),
-          this.Hex(q - positiveRow, r, -q - r)
+          this.Hex(q - positiveRow, r, -(q - positiveRow) - r)
         );
       }
     }
@@ -77,7 +78,7 @@ export default class Canvas extends React.Component {
         this.drawHexCoordinates(
           this.canvasHex,
           this.Point(x, y),
-          this.Hex(q + negativeRow, r, -q - r)
+          this.Hex(q + negativeRow, r, -(q + negativeRow) - r)
         );
       }
     }
@@ -141,6 +142,26 @@ export default class Canvas extends React.Component {
     return this.Hex(q, r, -q - r);
   }
 
+  cubeDirection(direction) {
+    const cubeDirections = [
+      this.Hex(1, 0, -1),
+      this.Hex(1, -1, 0),
+      this.Hex(0, -1, 1),
+      this.Hex(-1, 0, 1),
+      this.Hex(-1, 1, 0),
+      this.Hex(0, 1, -1)
+    ];
+    return cubeDirections[direction];
+  }
+
+  cubeAdd(a, b) {
+    return this.Hex(a.q + b.q, a.r + b.r, a.s + b.s);
+  }
+
+  getCubeNeighbor(h, direction) {
+    return this.cubeAdd(h, this.cubeDirection(direction));
+  }
+
   cubeRound(cube) {
     var rx = Math.round(cube.q);
     var ry = Math.round(cube.r);
@@ -184,6 +205,14 @@ export default class Canvas extends React.Component {
     ctx.fillText(h.q, center.x + 6, center.y);
     ctx.fillText(h.r, center.x - 3, center.y + 15);
     ctx.fillText(h.s, center.x - 12, center.y);
+  }
+
+  drawNeighbors(h) {
+    for (let i = 0; i <= 5; i++) {
+      const { q, r, s } = this.getCubeNeighbor(this.Hex(h.q, h.r, h.s), i);
+      const { x, y } = this.hexToPixel(this.Hex(q, r, s));
+      this.drawHex(this.canvasCoordinates, this.Point(x, y), "red", 2);
+    }
   }
 
   handleMouseMove(e) {
