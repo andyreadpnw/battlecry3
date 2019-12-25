@@ -35,7 +35,16 @@ export default class Canvas extends React.Component {
       const { canvasWidth, canvasHeight } = this.state.canvasSize;
       const ctx = this.canvasCoordinates.getContext("2d");
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-      this.drawNeighbors(this.Hex(q, r, s));
+      /* this.drawNeighbors(this.Hex(q, r, s));*/
+      let currentDistanceLine = nextState.currentDistanceLine;
+      for (let i = 0; i <= currentDistanceLine.length - 1; i++) {
+        this.drawHex(
+          this.canvasCoordinates,
+          this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
+          "lime",
+          2
+        );
+      }
       this.drawHex(this.canvasCoordinates, this.Point(x, y), "lime", 2);
       return true;
     }
@@ -58,7 +67,7 @@ export default class Canvas extends React.Component {
       }
       for (let q = -5; q <= 6; q++) {
         const { x, y } = this.hexToPixel(this.Hex(q - positiveRow, r, -q - r));
-        this.drawHex(this.canvasHex, this.Point(x, y));
+        this.drawHex(this.canvasHex, this.Point(x, y), "grey");
         this.drawHexCoordinates(
           this.canvasHex,
           this.Point(x, y),
@@ -74,7 +83,7 @@ export default class Canvas extends React.Component {
       }
       for (let q = -5; q <= 6; q++) {
         const { x, y } = this.hexToPixel(this.Hex(q + negativeRow, r));
-        this.drawHex(this.canvasHex, this.Point(x, y));
+        this.drawHex(this.canvasHex, this.Point(x, y), "grey");
         this.drawHexCoordinates(
           this.canvasHex,
           this.Point(x, y),
@@ -158,6 +167,10 @@ export default class Canvas extends React.Component {
     return this.Hex(a.q + b.q, a.r + b.r, a.s + b.s);
   }
 
+  cubeSubtract(a, b) {
+    return this.Hex(a.q - b.q, a.r - b.r, a.s - b.s);
+  }
+
   getCubeNeighbor(h, direction) {
     return this.cubeAdd(h, this.cubeDirection(direction));
   }
@@ -179,6 +192,37 @@ export default class Canvas extends React.Component {
       rz = -rx - ry;
     }
     return this.Hex(rx, ry, rz);
+  }
+
+  getDistanceLine(a, b) {
+    let dist = this.cubeDistance(a, b);
+    let arr = [];
+    for (let i = 0; i <= dist; i++) {
+      let center = this.hexToPixel(
+        this.cubeRound(this.cubeLinearInt(a, b, (1.0 / dist) * i))
+      );
+      arr = [].concat(arr, center);
+    }
+    this.setState({
+      currentDistanceLine: arr
+    });
+  }
+
+  cubeDistance(a, b) {
+    const { q, r, s } = this.cubeSubtract(a, b);
+    return (Math.abs(q) + Math.abs(r) + Math.abs(s)) / 2;
+  }
+
+  cubeLinearInt(a, b, t) {
+    return this.Hex(
+      this.linearInt(a.q, b.q, t),
+      this.linearInt(a.r, b.r, t),
+      this.linearInt(a.s, b.s, t)
+    );
+  }
+
+  linearInt(a, b, t) {
+    return a + (b - a) * t;
   }
 
   Point(x, y) {
@@ -223,7 +267,8 @@ export default class Canvas extends React.Component {
       this.pixelToHex(this.Point(offsetX, offsetY))
     );
     const { x, y } = this.hexToPixel(this.Hex(q, r, s));
-    // this.drawHex(this.canvasCoordinates, this.Point(x, y), "green", 2);
+    this.getDistanceLine(this.Hex(0, 0, 0), this.Hex(q, r, s));
+    console.log(this.state.currentDistanceLine);
     this.setState({
       currentHex: { q, r, s, x, y }
     });
