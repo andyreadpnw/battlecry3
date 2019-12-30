@@ -7,14 +7,14 @@ export default class Canvas extends React.Component {
 
     this.state = {
       hexSize: 30,
-      hexOrigin: { x: 300, y: 300 }
+      hexOrigin: { x: 300, y: 250 }
     };
   }
 
   componentWillMount() {
     let hexParameters = this.getHexParameters();
     this.setState({
-      canvasSize: { canvasWidth: 800, canvasHeight: 600 },
+      canvasSize: { canvasWidth: 680, canvasHeight: 500 },
       hexParameters: hexParameters
     });
   }
@@ -83,6 +83,7 @@ export default class Canvas extends React.Component {
       }
       for (let q = -5; q <= 6; q++) {
         const { x, y } = this.hexToPixel(this.Hex(q + negativeRow, r));
+
         this.drawHex(this.canvasHex, this.Point(x, y), "grey");
         this.drawHexCoordinates(
           this.canvasHex,
@@ -260,7 +261,12 @@ export default class Canvas extends React.Component {
   }
 
   handleMouseMove(e) {
-    const { left, right, top, bottom } = this.state.canvasPosition;
+    const { canvasWidth, canvasHeight } = this.state.canvasSize;
+    const {
+      hexWidth,
+      hexHeight,
+    } = this.state.hexParameters;
+    const { left, top} = this.state.canvasPosition;
     let offsetX = e.pageX - left;
     let offsetY = e.pageY - top;
     const { q, r, s } = this.cubeRound(
@@ -269,9 +275,12 @@ export default class Canvas extends React.Component {
     const { x, y } = this.hexToPixel(this.Hex(q, r, s));
     this.getDistanceLine(this.Hex(0, 0, 0), this.Hex(q, r, s));
     console.log(this.state.currentDistanceLine);
-    this.setState({
-      currentHex: { q, r, s, x, y }
-    });
+    // prettier-ignore
+    if ((x > hexWidth/2 && x < canvasWidth - hexWidth/2) && (y > hexHeight/2 && y < canvasHeight - hexHeight/2)){
+      this.setState({
+        currentHex: { q, r, s, x, y }
+      });
+    }
   }
 
   render() {
