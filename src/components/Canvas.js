@@ -55,7 +55,8 @@ export default class Canvas extends React.Component {
       cubeNeighborsArray: [],
       infantryDistance: 6,
       greyUnitHealth: 4,
-      blueUnitHealth: 4
+      blueUnitHealth: 4,
+      firingDistance: 0
     };
   }
 
@@ -425,18 +426,24 @@ export default class Canvas extends React.Component {
 
     if (this.state.phase === "firing" && this.state.playerTurn === 1) {
       let playerPosition = this.state.playerPosition;
-      this.getDistanceLine(
+      let fireDist = this.getDistanceLine(
         this.Hex(playerPosition.q, playerPosition.r, playerPosition.s),
         this.Hex(q, r, s)
       );
+      this.setState({
+        firingDistance: fireDist
+      });
     }
 
     if (this.state.phase === "firing" && this.state.playerTurn === 2) {
       let playerPosition = this.state.playerPosition;
-      this.getDistanceLine(
+      let fireDist = this.getDistanceLine(
         this.Hex(playerPosition.q, playerPosition.r, playerPosition.s),
         this.Hex(q, r, s)
       );
+      this.setState({
+        firingDistance: fireDist
+      });
     }
 
     // console.log(this.Hex(q, r, s));
