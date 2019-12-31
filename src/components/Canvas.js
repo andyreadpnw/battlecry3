@@ -34,6 +34,7 @@ let blueHexes = ['{"q":-2,"r":4,"s":-2}'];
 
 let greyHexCheck = [{ q: 3, r: -4, s: 1 }];
 let blueHexCheck = [{ q: -2, r: 4, s: -2 }];
+let resetBluePosition = [{ q: -2, r: 4, s: -2 }];
 
 export default class Canvas extends React.Component {
   constructor(props) {
@@ -49,7 +50,8 @@ export default class Canvas extends React.Component {
       greyHexes: greyHexes,
       blueHexes: blueHexes,
       playerTurn: 1,
-      phase: "movement"
+      phase: "movement",
+      cubeNeighborsArray: []
     };
   }
 
@@ -72,7 +74,6 @@ export default class Canvas extends React.Component {
     this.drawForestHexes();
     this.drawBlueUnitHexes();
     this.drawGreyUnitHexes();
-    console.log(this.state.greyHexes);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -83,23 +84,25 @@ export default class Canvas extends React.Component {
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       this.drawNeighbors(this.Hex(q, r, s));
       let currentDistanceLine = nextState.currentDistanceLine;
-      for (let i = 0; i <= currentDistanceLine.length - 2; i++) {
-        if (i == 0) {
-          this.drawHex(
-            this.canvasCoordinates,
-            this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
-            "lime",
-            1,
-            "red"
-          );
-        } else {
-          this.drawHex(
-            this.canvasCoordinates,
-            this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
-            "lime",
-            1,
-            "lime"
-          );
+      if (currentDistanceLine != null) {
+        for (let i = 0; i <= currentDistanceLine.length - 2; i++) {
+          if (i == 0) {
+            this.drawHex(
+              this.canvasCoordinates,
+              this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
+              "lime",
+              1,
+              "red"
+            );
+          } else {
+            this.drawHex(
+              this.canvasCoordinates,
+              this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
+              "lime",
+              1,
+              "lime"
+            );
+          }
         }
       }
       this.drawHex(this.canvasCoordinates, this.Point(x, y), "lime", 1, "lime");
@@ -369,6 +372,10 @@ export default class Canvas extends React.Component {
           y < canvasHeight - hexHeight / 2
         ) {
           cubeNeighborsArray.push([q, r, s]);
+          this.setState({
+            cubeNeighborsArray: cubeNeighborsArray,
+            priorHex: this.state.currentHex
+          });
           this.drawHex(this.canvasCoordinates, this.Point(x, y), "blue", 2);
         }
       }
@@ -395,7 +402,6 @@ export default class Canvas extends React.Component {
         }
       }
     }
-    console.log(cubeNeighborsArray);
   }
 
   handleMouseMove(e) {
@@ -408,13 +414,16 @@ export default class Canvas extends React.Component {
       this.pixelToHex(this.Point(offsetX, offsetY))
     );
     const { x, y } = this.hexToPixel(this.Hex(q, r, s));
-    let playerPosition = this.state.playerPosition;
-    this.getDistanceLine(
-      this.Hex(playerPosition.q, playerPosition.r, playerPosition.s),
-      this.Hex(q, r, s)
-    );
 
-    console.log(this.Hex(q, r, s));
+    if (this.state.phase === "firing" && this.state.playerTurn === 1) {
+      let playerPosition = this.state.playerPosition;
+      this.getDistanceLine(
+        this.Hex(playerPosition.q, playerPosition.r, playerPosition.s),
+        this.Hex(q, r, s)
+      );
+    }
+
+    // console.log(this.Hex(q, r, s));
 
     if (
       x > hexWidth / 2 &&
@@ -429,9 +438,34 @@ export default class Canvas extends React.Component {
   }
 
   handleClick() {
-    this.setState({
-      playerPosition: this.state.currentHex
-    });
+
+    for (let i = 0; i <= this.state.cubeNeighborsArray.length; i++) {
+      if (this.state.cubeNeighborsArray[i] != null) {
+        if (
+          this.state.currentHex.q == this.state.cubeNeighborsArray[i][0] &&
+          this.state.currentHex.r == this.state.cubeNeighborsArray[i][1] &&
+          this.state.currentHex.s == this.state.cubeNeighborsArray[i][2]
+        ) {
+          resetBluePosition.push(this.state.currentHex);
+          this.setState({
+            phase: "firing",
+            playerPosition: this.state.currentHex,
+            blueHexes: resetBluePosition
+          });
+          console.log(resetBluePosition);
+
+          let { x, y } = this.hexToPixel(
+            this.Hex(
+              resetBluePosition[0].q,
+              resetBluePosition[0].r,
+              resetBluePosition[0].s
+            )
+          );
+          this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "blue");
+          this.drawBlueUnitHexes();
+        }
+      }
+    }
   }
 
   render() {
