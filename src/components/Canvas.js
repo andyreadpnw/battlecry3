@@ -351,6 +351,7 @@ export default class Canvas extends React.Component {
   drawNeighbors(h) {
     const { canvasWidth, canvasHeight } = this.state.canvasSize;
     const { hexWidth, hexHeight } = this.state.hexParameters;
+    let cubeNeighborsArray = [];
     if (
       this.state.phase === "movement" &&
       this.state.playerTurn === 1 &&
@@ -367,6 +368,7 @@ export default class Canvas extends React.Component {
           y > hexHeight / 2 &&
           y < canvasHeight - hexHeight / 2
         ) {
+          cubeNeighborsArray.push([q, r, s]);
           this.drawHex(this.canvasCoordinates, this.Point(x, y), "blue", 2);
         }
       }
@@ -388,10 +390,12 @@ export default class Canvas extends React.Component {
           y > hexHeight / 2 &&
           y < canvasHeight - hexHeight / 2
         ) {
+          cubeNeighborsArray.push([q, r, s]);
           this.drawHex(this.canvasCoordinates, this.Point(x, y), "red", 2);
         }
       }
     }
+    console.log(cubeNeighborsArray);
   }
 
   handleMouseMove(e) {
