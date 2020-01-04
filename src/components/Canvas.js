@@ -29,9 +29,6 @@ let forestHexes = [
   '{"q":-5,"r":0,"s":5}'
 ];
 
-let greyHexes = ['{"q":3,"r":-4,"s":1}'];
-let blueHexes = ['{"q":-2,"r":4,"s":-2}'];
-
 let greyHexCheck = [{ q: 3, r: -4, s: 1 }];
 let blueHexCheck = [{ q: -2, r: 4, s: -2 }];
 let resetBluePosition = [{ q: -2, r: 4, s: -2 }];
@@ -48,15 +45,16 @@ export default class Canvas extends React.Component {
       currentHex: { q: 0, r: 0, s: 0, x: 0, y: 0 },
       playerPosition: { q: 0, r: 0, s: 0, x: 0, y: 0 },
       forestHexes: forestHexes,
-      greyHexes: greyHexes,
-      blueHexes: blueHexes,
+      greyHexes: [],
+      blueHexes: [],
       playerTurn: 1,
       phase: "movement",
       cubeNeighborsArray: [],
       infantryDistance: 6,
       greyUnitHealth: 4,
       blueUnitHealth: 4,
-      firingDistance: 0
+      firingDistance: 0,
+      currentGame: 1
     };
   }
 
@@ -76,9 +74,32 @@ export default class Canvas extends React.Component {
     this.canvasCoordinates.height = canvasHeight;
     this.getCanvasPosition(this.canvasCoordinates);
     this.drawHexes();
-    this.drawForestHexes();
-    this.drawBlueUnitHexes();
-    this.drawGreyUnitHexes();
+
+    fetch("http://localhost:3000/units")
+      .then(res => res.json())
+      .then(json => {
+        this.setState(
+          {
+            greyHexes: json
+              .filter(
+                x =>
+                  x.nation == "Confederate" &&
+                  x.game_id == this.state.currentGame
+              )
+              .map(y => JSON.parse(y.coords)),
+            blueHexes: json
+              .filter(
+                x => x.nation == "Union" && x.game_id == this.state.currentGame
+              )
+              .map(y => JSON.parse(y.coords))
+          },
+          () => {
+            this.drawForestHexes();
+            this.drawBlueUnitHexes();
+            this.drawGreyUnitHexes();
+          }
+        );
+      });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -92,13 +113,6 @@ export default class Canvas extends React.Component {
       if (currentDistanceLine != null) {
         for (let i = 0; i <= currentDistanceLine.length - 2; i++) {
           if (i == 0) {
-            // this.drawHex(
-            //   this.canvasCoordinates,
-            //   this.Point(currentDistanceLine[i].x, currentDistanceLine[i].y),
-            //   "lime",
-            //   1,
-            //   "red"
-            // );
           } else {
             this.drawHex(
               this.canvasCoordinates,
@@ -133,11 +147,6 @@ export default class Canvas extends React.Component {
       for (let q = -5; q <= 6; q++) {
         const { x, y } = this.hexToPixel(this.Hex(q - positiveRow, r, -q - r));
         this.drawHex(this.canvasHex, this.Point(x, y), "black", 1, "grey");
-        /*this.drawHexCoordinates(
-          this.canvasHex,
-          this.Point(x, y),
-          this.Hex(q - positiveRow, r, -(q - positiveRow) - r)
-        ) */
       }
     }
 
@@ -150,11 +159,6 @@ export default class Canvas extends React.Component {
         const { x, y } = this.hexToPixel(this.Hex(q + negativeRow, r));
 
         this.drawHex(this.canvasHex, this.Point(x, y), "black", 1, "grey");
-        /* this.drawHexCoordinates(
-          this.canvasHex,
-          this.Point(x, y),
-          this.Hex(q + negativeRow, r, -(q + negativeRow) - r)
-        ); */
       }
     }
   }
@@ -178,7 +182,7 @@ export default class Canvas extends React.Component {
 
   drawGreyUnitHexes() {
     this.state.greyHexes.map(i => {
-      const { q, r, s } = JSON.parse(i);
+      const { q, r, s } = i;
       const { x, y } = this.hexToPixel(this.Hex(q, r, s));
       this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "black");
     });
@@ -186,7 +190,7 @@ export default class Canvas extends React.Component {
 
   drawBlueUnitHexes() {
     this.state.blueHexes.map(i => {
-      const { q, r, s } = JSON.parse(i);
+      const { q, r, s } = i;
       const { x, y } = this.hexToPixel(this.Hex(q, r, s));
       this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "blue");
     });
