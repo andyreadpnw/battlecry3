@@ -12,7 +12,6 @@ export class GameSelect extends Component {
       gameSelectedID: "none",
       gameSelected: false
     };
-    // this.handleClick = this.handleClick.bind(this);
   }
 
   componentWillMount() {
@@ -69,7 +68,7 @@ export class GameSelect extends Component {
     console.log(this.state.gameSelectedID);
     var overlay =
       this.state.gameSelectedID !== "none" ? (
-        <Canvas id={this.state.gameSelected} />
+        <Canvas id={this.state.gameSelectedID} />
       ) : null;
     if (this.props.login === true && this.state.gameSelected === false) {
       let displayGames = this.state.games;

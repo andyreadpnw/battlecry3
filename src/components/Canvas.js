@@ -67,6 +67,8 @@ export default class Canvas extends React.Component {
   }
 
   componentDidMount() {
+    let { id } = this.props;
+    // console.log(this.props.id);
     const { canvasWidth, canvasHeight } = this.state.canvasSize;
     this.canvasHex.width = canvasWidth;
     this.canvasHex.height = canvasHeight;
@@ -74,6 +76,10 @@ export default class Canvas extends React.Component {
     this.canvasCoordinates.height = canvasHeight;
     this.getCanvasPosition(this.canvasCoordinates);
     this.drawHexes();
+
+    this.setState({
+      currentGame: id
+    });
 
     fetch("http://localhost:3000/units")
       .then(res => res.json())
@@ -97,6 +103,7 @@ export default class Canvas extends React.Component {
             this.drawForestHexes();
             this.drawBlueUnitHexes();
             this.drawGreyUnitHexes();
+            console.log(this.state.currentGame);
           }
         );
       });
