@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Canvas from "./Canvas";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from "./Login";
 import GameSelect from "./GameSelect";

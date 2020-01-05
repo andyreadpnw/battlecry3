@@ -27,7 +27,7 @@ export class Login extends Component {
     });
   };
 
-  handelChange = e => {
+  handleChange = e => {
     this.setState({
       ...this.state,
       currentPlayer: {
@@ -42,12 +42,12 @@ export class Login extends Component {
     if (loginClicked === true && this.state.submitted === false) {
       return (
         <div>
-          <h1>Hi login</h1>
+          <h1>Login</h1>
           <form onSubmit={e => this.handleSubmit(e)}>
             <input
               type="text"
               placeholder="Name"
-              onChange={e => this.handelChange(e)}
+              onChange={e => this.handleChange(e)}
               id="name"
             />
             <input type="submit" value="Submit" />
