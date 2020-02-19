@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/battlecry3/precache-manifest.723083cfd734896e0ae8e693e22d752d.js"
+  "/battlecry3/precache-manifest.e5ffbfca2e9ee3ab1325189e18a147ea.js"
 );
 
 self.addEventListener('message', (event) => {

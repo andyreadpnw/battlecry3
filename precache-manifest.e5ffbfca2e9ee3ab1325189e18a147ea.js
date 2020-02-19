@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0d84112c4ad5a60d5c2465f5afb706ac",
+    "revision": "eac5bf3d2c9059fb9c5afda3de60ff80",
     "url": "/battlecry3/index.html"
   },
   {
-    "revision": "64e38446e46cedaa1ece",
+    "revision": "ac553c4558ace3993ee6",
     "url": "/battlecry3/static/css/main.85936296.chunk.css"
   },
   {
-    "revision": "577352dd0c1aecdbbf47",
-    "url": "/battlecry3/static/js/2.0e7b3f09.chunk.js"
+    "revision": "f368ca02469d9de56acb",
+    "url": "/battlecry3/static/js/2.a96d3175.chunk.js"
   },
   {
     "revision": "e928fe768baa9832b5bc57eae021f30c",
-    "url": "/battlecry3/static/js/2.0e7b3f09.chunk.js.LICENSE"
+    "url": "/battlecry3/static/js/2.a96d3175.chunk.js.LICENSE"
   },
   {
-    "revision": "64e38446e46cedaa1ece",
-    "url": "/battlecry3/static/js/main.9b6725d8.chunk.js"
+    "revision": "ac553c4558ace3993ee6",
+    "url": "/battlecry3/static/js/main.e733d41b.chunk.js"
   },
   {
     "revision": "60063f2d3725ec37e43e",
