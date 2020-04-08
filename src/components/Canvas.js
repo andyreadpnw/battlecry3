@@ -26,7 +26,7 @@ let forestHexes = [
   '{"q":-1,"r":1,"s":0}',
   '{"q":-2,"r":1,"s":1}',
   '{"q":-3,"r":2,"s":1}',
-  '{"q":-5,"r":0,"s":5}'
+  '{"q":-5,"r":0,"s":5}',
 ];
 
 let UNITSURL = `http://localhost:3000/units`;
@@ -53,7 +53,7 @@ export default class Canvas extends React.Component {
       firingDistance: 0,
       currentGame: 1,
       clickCoordsHolder: [],
-      previousPlayerPosition: { q: 0, r: 0, s: 0 }
+      previousPlayerPosition: { q: 0, r: 0, s: 0 },
     };
   }
 
@@ -61,7 +61,7 @@ export default class Canvas extends React.Component {
     let hexParameters = this.getHexParameters();
     this.setState({
       canvasSize: { canvasWidth: 680, canvasHeight: 500 },
-      hexParameters: hexParameters
+      hexParameters: hexParameters,
     });
   }
 
@@ -77,26 +77,27 @@ export default class Canvas extends React.Component {
     this.drawHexes();
 
     this.setState({
-      currentGame: id
+      currentGame: id,
     });
 
     fetch("http://localhost:3000/units")
-      .then(res => res.json())
-      .then(json => {
+      .then((res) => res.json())
+      .then((json) => {
         this.setState(
           {
             greyHexes: json
               .filter(
-                x =>
+                (x) =>
                   x.nation == "Confederate" &&
                   x.game_id == this.state.currentGame
               )
-              .map(y => JSON.parse(y.coords)),
+              .map((y) => JSON.parse(y.coords)),
             blueHexes: json
               .filter(
-                x => x.nation == "Union" && x.game_id == this.state.currentGame
+                (x) =>
+                  x.nation == "Union" && x.game_id == this.state.currentGame
               )
-              .map(y => JSON.parse(y.coords))
+              .map((y) => JSON.parse(y.coords)),
           },
           () => {
             this.drawForestHexes();
@@ -142,7 +143,7 @@ export default class Canvas extends React.Component {
       hexWidth,
       hexHeight,
       vertDist,
-      horizDist
+      horizDist,
     } = this.state.hexParameters;
     const hexOrigin = this.state.hexOrigin;
     let positiveRow = 0;
@@ -179,7 +180,7 @@ export default class Canvas extends React.Component {
   }
 
   drawForestHexes() {
-    this.state.forestHexes.map(i => {
+    this.state.forestHexes.map((i) => {
       const { q, r, s } = JSON.parse(i);
       const { x, y } = this.hexToPixel(this.Hex(q, r, s));
       this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "green");
@@ -187,7 +188,7 @@ export default class Canvas extends React.Component {
   }
 
   drawGreyUnitHexes() {
-    this.state.greyHexes.map(i => {
+    this.state.greyHexes.map((i) => {
       const { q, r, s } = i;
       const { x, y } = this.hexToPixel(this.Hex(q, r, s));
       this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "red");
@@ -195,7 +196,7 @@ export default class Canvas extends React.Component {
   }
 
   drawBlueUnitHexes() {
-    this.state.blueHexes.map(i => {
+    this.state.blueHexes.map((i) => {
       const { q, r, s } = i;
       const { x, y } = this.hexToPixel(this.Hex(q, r, s));
       this.drawHex(this.canvasHex, this.Point(x, y), 1, "black", "blue");
@@ -210,15 +211,15 @@ export default class Canvas extends React.Component {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json"
+        Accept: "application/json",
       },
       body: JSON.stringify({
         name: "1st Mississippi",
         coords: greyCoordString,
         health: 4,
         nation: "Confederate",
-        game_id: 1
-      })
+        game_id: 1,
+      }),
     }).then(function(resp) {
       if (Math.floor(resp.status / 200) === 1) {
         console.log("Great ");
@@ -227,6 +228,36 @@ export default class Canvas extends React.Component {
       }
     });
     console.log("here");
+    console.log("beer");
+    //paint new position onto hex map
+    fetch("http://localhost:3000/units")
+      .then((res) => res.json())
+      .then((json) => {
+        this.setState(
+          {
+            greyHexes: json
+              .filter(
+                (x) =>
+                  x.nation == "Confederate" &&
+                  x.game_id == this.state.currentGame
+              )
+              .map((y) => JSON.parse(y.coords)),
+            blueHexes: json
+              .filter(
+                (x) =>
+                  x.nation == "Union" && x.game_id == this.state.currentGame
+              )
+              .map((y) => JSON.parse(y.coords)),
+          },
+          () => {
+            this.drawHexes();
+            this.drawForestHexes();
+            this.drawBlueUnitHexes();
+            this.drawGreyUnitHexes();
+            console.log(this.state.currentGame);
+          }
+        );
+      });
   }
 
   getHexCornerCoord(center, i) {
@@ -252,8 +283,8 @@ export default class Canvas extends React.Component {
         left: rect.left,
         right: rect.right,
         top: rect.top,
-        bottom: rect.bottom
-      }
+        bottom: rect.bottom,
+      },
     });
   }
 
@@ -280,7 +311,7 @@ export default class Canvas extends React.Component {
       this.Hex(0, -1, 1),
       this.Hex(-1, 0, 1),
       this.Hex(-1, 1, 0),
-      this.Hex(0, 1, -1)
+      this.Hex(0, 1, -1),
     ];
     return cubeDirections[direction];
   }
@@ -327,7 +358,7 @@ export default class Canvas extends React.Component {
         arr = [].concat(arr, center);
       }
       this.setState({
-        currentDistanceLine: arr
+        currentDistanceLine: arr,
       });
     }
   }
@@ -396,13 +427,13 @@ export default class Canvas extends React.Component {
   }
 
   findInBlueHexes(q, r, s) {
-    return this.state.blueHexes.filter(item => {
+    return this.state.blueHexes.filter((item) => {
       return item.q === q && item.r === r && item.s === s;
     });
   }
 
   findInGreyHexes(q, r, s) {
-    return this.state.greyHexes.filter(item => {
+    return this.state.greyHexes.filter((item) => {
       return item.q === q && item.r === r && item.s === s;
     });
   }
@@ -424,7 +455,7 @@ export default class Canvas extends React.Component {
         cubeNeighborsArray.push([q, r, s]);
         this.setState(
           {
-            cubeNeighborsArray: cubeNeighborsArray
+            cubeNeighborsArray: cubeNeighborsArray,
           },
           () => {
             console.log(this.state.cubeNeighborsArray);
@@ -467,7 +498,7 @@ export default class Canvas extends React.Component {
           formerPositionHolder.r = r;
           formerPositionHolder.s = s;
           this.setState({
-            previousPlayerPosition: formerPositionHolder
+            previousPlayerPosition: formerPositionHolder,
           });
           this.drawHex(this.canvasCoordinates, this.Point(x, y), "blue", 2);
         }
@@ -485,7 +516,7 @@ export default class Canvas extends React.Component {
           formerPositionHolder.r = r;
           formerPositionHolder.s = s;
           this.setState({
-            previousPlayerPosition: formerPositionHolder
+            previousPlayerPosition: formerPositionHolder,
           });
           this.drawHex(this.canvasCoordinates, this.Point(x, y), "blue", 2);
         }
@@ -511,7 +542,7 @@ export default class Canvas extends React.Component {
         this.Hex(q, r, s)
       );
       this.setState({
-        firingDistance: fireDist
+        firingDistance: fireDist,
       });
     }
 
@@ -524,7 +555,7 @@ export default class Canvas extends React.Component {
       y < canvasHeight - hexHeight / 2
     ) {
       this.setState({
-        currentHex: { q, r, s, x, y }
+        currentHex: { q, r, s, x, y },
       });
     }
   }
@@ -547,8 +578,8 @@ export default class Canvas extends React.Component {
       {
         clickCoordsHolder: [
           ...this.state.clickCoordsHolder,
-          this.state.currentHex
-        ]
+          this.state.currentHex,
+        ],
       },
       () => {
         if (this.state.phase == "movement") {
@@ -576,7 +607,7 @@ export default class Canvas extends React.Component {
   render() {
     return (
       <div>
-        <canvas ref={canvasHex => (this.canvasHex = canvasHex)}> </canvas>
+        <canvas ref={(canvasHex) => (this.canvasHex = canvasHex)}> </canvas>
         {/* prettier-ignore */}
         <canvas ref={canvasCoordinates => (this.canvasCoordinates = canvasCoordinates)} onMouseMove={this.handleMouseMove} onClick={this.handleClick}> </canvas>
       </div>
