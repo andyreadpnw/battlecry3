@@ -250,6 +250,9 @@ export default class Canvas extends React.Component {
               .map((y) => JSON.parse(y.coords)),
           },
           () => {
+            console.log(
+              "There is an Async problem that needs fixing after the click for movement"
+            );
             this.drawHexes();
             this.drawForestHexes();
             this.drawBlueUnitHexes();
@@ -582,7 +585,6 @@ export default class Canvas extends React.Component {
         ],
       },
       () => {
- console.log("find a place to fix movement here")
         if (this.state.phase == "movement") {
           for (let i = 0; i <= this.state.cubeNeighborsArray.length; i++) {
             if (this.state.cubeNeighborsArray[i] != null) {
