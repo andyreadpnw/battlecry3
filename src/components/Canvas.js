@@ -202,7 +202,7 @@ export default class Canvas extends React.Component {
     });
   }
 
-  async fetchNewUnitPosition(q, r, s) {
+  fetchNewUnitPosition = async (q, r, s) => {
     console.log(q, r, s);
     let greyCoordString = `{"q":${q},"r":${r},"s":${s}}`;
 
